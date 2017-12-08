@@ -50,7 +50,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     // selected position is a key of the var that is stored in
     // bundle -> bundle.putLong(SELECTED_POSITION , position)
     // as position var is in the bundle is the current position of the player when the device is rotated
-    private static final String SELECTED_POSITION = "position";
+    private static final String SELECTED_POSITION = "position", STATE = "state";
     SimpleExoPlayerView exoPlayerView;
     SimpleExoPlayer exoPlayer;
     private DataSource.Factory mediaDataSourceFactory;
@@ -64,8 +64,12 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     Bundle bundle;
     RealmList<Step> steps;
     int listSize;
-    long pos =0;
-    public DescriptionFragment() {}
+    long pos = 0;
+    boolean state = true;
+    int chk = -1;
+
+    public DescriptionFragment() {
+    }
 
     @Override public void onAttach(Context context) {
         super.onAttach(context);
@@ -79,13 +83,20 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         position = C.TIME_UNSET;
         setRetainInstance(true);
         if (savedInstanceState != null) {
+
             position = savedInstanceState.getLong(SELECTED_POSITION, C.TIME_UNSET);
+            state = savedInstanceState.getBoolean(STATE);
+            chk = 1;
+
+
         }
 
 
     }
 
-    @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_description, container, false);
 
         try {
@@ -127,7 +138,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         super.onPause();
         if (exoPlayer != null) {
             position = exoPlayer.getCurrentPosition();
-            Log.e(TAG, "onPause : position :"+ position );
+            state = exoPlayer.getPlayWhenReady();
             exoPlayer.stop();
             exoPlayer.release();
             exoPlayer = null;
@@ -136,9 +147,9 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
     @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.e(TAG, "on saved instance state positin "+ position);
+        Log.e(TAG, "on saved instance state positin " + position);
         outState.putLong(SELECTED_POSITION, position);
-
+        outState.putBoolean(STATE, state);
     }
 
     @Override public void onResume() {
@@ -150,7 +161,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         } else {
             showStep(getPosition());
         }
-        Log.e(TAG, "onResume : pos : "+ pos );
+        Log.e(TAG, "onResume : pos : " + pos);
     }
 
     @Override public void onClick(View v) {
@@ -215,12 +226,17 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
                 MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
 
                 exoPlayerView.setPlayer(exoPlayer);
-                Log.e(TAG , "showPlayer : position : "+ position);
-                if (position != C.TIME_UNSET) {
+
+
+                if (chk != -1) {
                     exoPlayer.seekTo(position);
+
+                    exoPlayer.setPlayWhenReady(state);
                 }
+
                 exoPlayer.prepare(mediaSource);
-                exoPlayer.setPlayWhenReady(true);
+                if (chk == -1)
+                    exoPlayer.setPlayWhenReady(true);
 
             } else {
 
@@ -305,7 +321,6 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
     /**
      * get steps from database
-     *
      */
     public RealmList<Step> getSteps() {
         return steps;
@@ -313,7 +328,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
     /**
      * method to get step at position given in parameter from steps list
-     * */
+     */
     private Step getStep(int position) {
         if (getSteps() != null)
             return getSteps().get(position);

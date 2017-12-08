@@ -20,7 +20,6 @@ import io.realm.RealmResults;
  * Implementation of App Widget functionality.
  */
 public class MyWidgeProvider extends AppWidgetProvider {
-    static WidgetTable widgetTable;
     static RealmResults<WidgetTable> results;
     static List<WidgetTable> recipesArray;
     static Realm realm;
@@ -32,17 +31,18 @@ public class MyWidgeProvider extends AppWidgetProvider {
         realm = Realm.getDefaultInstance();
         results = realm.where(WidgetTable.class).findAll();
 
-        if(results.size() ==0){
+        if(results.size() == 0){
             views.setTextViewText(R.id.name_widget, "please select recipe from the app");
             return views;
         }
+
         recipesArray = realm.copyFromRealm(results);
         realm.close();
 
         WidgetTable widgetTable = recipesArray.get(0);
 
         // update widget view
-        views.setTextViewText(R.id.name_widget, widgetTable.getName());
+        views.setTextViewText(R.id.name_widget,widgetTable.getName());
         views.setTextViewText(R.id.ingredients_widget, widgetTable.getIngredients());
         Intent intent = new Intent(context, StepsActivity.class);
         Bundle bundle = new Bundle();

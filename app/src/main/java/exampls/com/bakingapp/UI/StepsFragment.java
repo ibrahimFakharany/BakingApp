@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +21,7 @@ import exampls.com.bakingapp.data.Ingredient;
 import exampls.com.bakingapp.data.Recipe;
 import exampls.com.bakingapp.data.WidgetTable;
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 /**
  * Created by 450 G1 on 03/10/2017.
@@ -88,8 +88,7 @@ public class StepsFragment extends Fragment {
             recyclerViewSteps.scrollToPosition(position);
             Log.e(TAG, "position " + position);
         }
-        Toolbar toolbar = (Toolbar) v.findViewById(R.id.app_bar);
-        toolbar.setTitle(recipe.getName());
+
         return v;
     }
 
@@ -108,6 +107,9 @@ public class StepsFragment extends Fragment {
         Realm realm = Realm.getDefaultInstance();
         realm.beginTransaction();
         int id = recipe.getId();
+        RealmResults<WidgetTable> results = realm.where(WidgetTable.class).findAll();
+
+        results.deleteAllFromRealm();
 
         String name = recipe.getName();
         String ingredients = getIngredient();

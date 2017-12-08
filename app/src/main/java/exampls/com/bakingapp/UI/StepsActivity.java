@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 
 import exampls.com.bakingapp.Controller.StepsRecyclerView;
 import exampls.com.bakingapp.R;
@@ -18,13 +21,19 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
     private static final String POSITION_KEY = "position";
     boolean twoPane = false;
 
-    @Override
-    public boolean onNavigateUpFromChild(Activity child) {
+    @Override public boolean onNavigateUpFromChild(Activity child) {
         return super.onNavigateUpFromChild(child);
     }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_steps);
 
@@ -36,8 +45,16 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
         Realm realm = Realm.getDefaultInstance();
         Recipe recipe = realm.where(Recipe.class).equalTo("id", recipeId).findFirst();
 
-        if (recipe != null) {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.app_bar);
+        setSupportActionBar(toolbar);
 
+        if(toolbar != null){
+
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        }
+        if (recipe != null) {
+            getSupportActionBar().setTitle(recipe.getName());
             Log.e(TAG, "RECIPE IS N'T NULL");
             FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -68,8 +85,7 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
         }
     }
 
-    @Override
-    public void onStepClick(int id, int position) {
+    @Override public void onStepClick(int id, int position) {
 
         Bundle bundle = new Bundle();
         bundle.putInt(RecipesActivity.RECIPE_KEY, id);
@@ -98,13 +114,11 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
 
     }
 
-    @Override
-    public int describeContents() {
+    @Override  public int describeContents() {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    @Override public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.TAG);
     }
 
@@ -116,13 +130,11 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
     }
 
     public static final Creator<StepsActivity> CREATOR = new Creator<StepsActivity>() {
-        @Override
-        public StepsActivity createFromParcel(Parcel source) {
+        @Override public StepsActivity createFromParcel(Parcel source) {
             return new StepsActivity(source);
         }
 
-        @Override
-        public StepsActivity[] newArray(int size) {
+        @Override public StepsActivity[] newArray(int size) {
             return new StepsActivity[size];
         }
     };

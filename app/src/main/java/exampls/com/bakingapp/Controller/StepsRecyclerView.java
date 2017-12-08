@@ -76,10 +76,9 @@ public class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.My
 
         }else {
 
-            int number = position + 1;
 
-            String shortDescription = recipe.getSteps().get(position).getShortDescription();
-            String thumbnail = recipe.getSteps().get(position).getThumbnailURL();
+            String shortDescription = recipe.getSteps().get(position-1).getShortDescription();
+            String thumbnail = recipe.getSteps().get(position-1).getThumbnailURL();
             if (thumbnail.trim().length() != 0)
                 Picasso.with(context).load(thumbnail).into(holder.imageView);
 
@@ -88,7 +87,7 @@ public class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.My
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onStepClicked.onStepClick(recipe.getId(), position);
+                    onStepClicked.onStepClick(recipe.getId(), position-1);
                 }
             });
 
@@ -99,7 +98,7 @@ public class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.My
     @Override
     public int getItemCount() {
 
-        return recipe.getSteps().size();
+        return recipe.getSteps().size() + 1 ;
 
     }
 
