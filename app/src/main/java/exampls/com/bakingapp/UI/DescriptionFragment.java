@@ -1,6 +1,5 @@
 package exampls.com.bakingapp.UI;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -67,19 +67,20 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     long pos = 0;
     boolean state = true;
     int chk = -1;
-
+    int isDestroyed = 0;
+    Bundle bund= null;
+    boolean onActivityCreated = false;
     public DescriptionFragment() {
     }
 
-    @Override public void onAttach(Context context) {
-        super.onAttach(context);
-    }
 
     @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         /**
          * position of the player to be stored
          */
+        Toast.makeText(getActivity(), "onActivityCreated", Toast.LENGTH_SHORT).show();
+        onActivityCreated = true;
         position = C.TIME_UNSET;
         setRetainInstance(true);
         if (savedInstanceState != null) {
@@ -88,11 +89,11 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
             state = savedInstanceState.getBoolean(STATE);
             chk = 1;
 
-
         }
 
 
     }
+
 
     @Nullable
     @Override
@@ -134,8 +135,8 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         return v;
     }
 
-    @Override public void onPause() {
-        super.onPause();
+    public void releasePlayer(){
+
         if (exoPlayer != null) {
             position = exoPlayer.getCurrentPosition();
             state = exoPlayer.getPlayWhenReady();
@@ -143,13 +144,18 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
             exoPlayer.release();
             exoPlayer = null;
         }
+
+    }
+    @Override public void onPause() {
+        super.onPause();
+
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.e(TAG, "on saved instance state positin " + position);
         outState.putLong(SELECTED_POSITION, position);
         outState.putBoolean(STATE, state);
+        bund= outState;
     }
 
     @Override public void onResume() {
@@ -159,9 +165,14 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
             descriptionTV.setText("here is will appear description");
 
         } else {
+            if(isDestroyed == 0 && !onActivityCreated){
+                onActivityCreated(bund);
+            }
+            onActivityCreated = false;
             showStep(getPosition());
         }
-        Log.e(TAG, "onResume : pos : " + pos);
+
+
     }
 
     @Override public void onClick(View v) {
@@ -170,6 +181,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
             case R.id.image_iv_next_video:
                 Log.e(TAG, "NEXT BTN");
                 if (getPosition() < getListSize() - 1) {
+                    releasePlayer();
                     int pos = getPosition();
                     setPosition(++pos);
                     showStep(getPosition());
@@ -178,6 +190,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
             case R.id.image_iv_previous_video:
                 Log.e(TAG, "PREV BTN");
                 if (getPosition() > 0) {
+                    releasePlayer();
                     int pos = getPosition();
                     setPosition(--pos);
                     showStep(getPosition());
@@ -335,4 +348,9 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         else return null;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isDestroyed = 1;
+    }
 }

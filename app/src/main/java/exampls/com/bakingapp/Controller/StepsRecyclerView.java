@@ -60,7 +60,7 @@ public class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.My
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
-        if(position == 0 ){
+        if (position == 0) {
 
             String ingredients = "";
             for (int i = 0; i < recipe.getIngredients().size(); i++) {
@@ -74,31 +74,31 @@ public class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.My
 
             holder.receipeStepDescription.setText(ingredients);
 
-        }else {
+        } else {
 
 
-            String shortDescription = recipe.getSteps().get(position-1).getShortDescription();
-            String thumbnail = recipe.getSteps().get(position-1).getThumbnailURL();
+            String shortDescription = recipe.getSteps().get(position - 1).getShortDescription();
+            String thumbnail = recipe.getSteps().get(position - 1).getThumbnailURL();
             if (thumbnail.trim().length() != 0)
                 Picasso.with(context).load(thumbnail).into(holder.imageView);
 
             holder.receipeStepDescription.setText(shortDescription);
 
+
+        }
+        if (position != 0)
             holder.cardView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    onStepClicked.onStepClick(recipe.getId(), position-1);
+                    onStepClicked.onStepClick(recipe.getId(), position - 1);
                 }
             });
-
-
-        }
     }
 
     @Override
     public int getItemCount() {
 
-        return recipe.getSteps().size() + 1 ;
+        return recipe.getSteps().size() + 1;
 
     }
 
@@ -112,7 +112,6 @@ public class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.My
             super(itemView);
             receipeStepDescription = (TextView) itemView
                     .findViewById(R.id.step_short_description_tv);
-
 
 
             cardView = (CardView) itemView.findViewById(R.id.card_view_steps);

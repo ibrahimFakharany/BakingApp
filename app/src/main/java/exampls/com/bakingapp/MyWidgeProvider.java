@@ -50,7 +50,6 @@ public class MyWidgeProvider extends AppWidgetProvider {
         intent.putExtras(bundle);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,0);
         views.setOnClickPendingIntent(R.id.relative_widget, pendingIntent);
-
         return views;
     }
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,

@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import exampls.com.bakingapp.Controller.StepsRecyclerView;
 import exampls.com.bakingapp.R;
@@ -61,9 +62,9 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
             if (null != findViewById(R.id.fragment_description)) {
 
                 twoPane = true;
-
+                Toast.makeText(this, "two pane ", Toast.LENGTH_SHORT).show();
                 DescriptionFragment descriptionFragment = new DescriptionFragment();
-
+                descriptionFragment.setArguments(null);
                 fragmentManager.beginTransaction()
                         .add(R.id.fragment_description, descriptionFragment)
                         .commit();
