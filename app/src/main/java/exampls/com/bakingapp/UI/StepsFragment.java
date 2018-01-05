@@ -51,8 +51,6 @@ public class StepsFragment extends Fragment {
         super.onSaveInstanceState(outState);
         int recyclerStateBeforeRotate = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         outState.putInt("test", recyclerStateBeforeRotate);
-
-
     }
 
     @Override
@@ -86,7 +84,7 @@ public class StepsFragment extends Fragment {
         recyclerViewSteps.setAdapter(stepsRecyclerView);
         if (position != -1) {
             recyclerViewSteps.scrollToPosition(position);
-            Log.e(TAG, "position " + position);
+
         }
 
         return v;

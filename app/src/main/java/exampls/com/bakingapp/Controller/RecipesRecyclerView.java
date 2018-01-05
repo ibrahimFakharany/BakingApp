@@ -54,7 +54,7 @@ public class RecipesRecyclerView extends RecyclerView.Adapter<RecipesRecyclerVie
         String image = recipesList.get(position).getImage();
         holder.recipeNameTV.setText(recipeName);
 
-        holder.cardView.setOnClickListener(new View.OnClickListener() {
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 onCardViewClicked.onCardClicked(recipesList.get(position));

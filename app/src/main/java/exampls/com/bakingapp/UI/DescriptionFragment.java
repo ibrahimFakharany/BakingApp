@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -51,6 +50,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     // bundle -> bundle.putLong(SELECTED_POSITION , position)
     // as position var is in the bundle is the current position of the player when the device is rotated
     private static final String SELECTED_POSITION = "position", STATE = "state";
+    private static final String STEP_POSITION = "stepposition";
     SimpleExoPlayerView exoPlayerView;
     SimpleExoPlayer exoPlayer;
     private DataSource.Factory mediaDataSourceFactory;
@@ -79,7 +79,6 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         /**
          * position of the player to be stored
          */
-        Toast.makeText(getActivity(), "onActivityCreated", Toast.LENGTH_SHORT).show();
         onActivityCreated = true;
         position = C.TIME_UNSET;
         setRetainInstance(true);
@@ -87,6 +86,8 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
             position = savedInstanceState.getLong(SELECTED_POSITION, C.TIME_UNSET);
             state = savedInstanceState.getBoolean(STATE);
+            stepPosition = savedInstanceState.getInt(STEP_POSITION);
+
             chk = 1;
 
         }
@@ -148,13 +149,14 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     }
     @Override public void onPause() {
         super.onPause();
-
+        releasePlayer();
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(SELECTED_POSITION, position);
         outState.putBoolean(STATE, state);
+        outState.putInt(STEP_POSITION, getPosition());
         bund= outState;
     }
 
