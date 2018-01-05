@@ -111,7 +111,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
             if (bundle == null) {
 
-                descriptionTV.setText("here is will appear description");
+                descriptionTV.setText("description will appear");
 
             } else {
 
