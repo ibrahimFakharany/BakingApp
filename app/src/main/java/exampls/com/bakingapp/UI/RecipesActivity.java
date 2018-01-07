@@ -15,6 +15,7 @@ public class RecipesActivity extends AppCompatActivity implements RecipesFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipes);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         RecipesFragment recipesFragment = new RecipesFragment();
 

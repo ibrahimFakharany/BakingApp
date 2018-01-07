@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,7 +30,7 @@ public class RecipesFragment extends Fragment implements RecipesFragmentControll
     Parcelable mListState = null;
     LinearLayoutManager mLinearLayoutManager;
     String RECYCLERVIEW_POSITION = "rvpostion";
-
+    CountingIdlingResource countingIdle = new CountingIdlingResource("recipes_counting");
     int position = -1;
 
     @Override
@@ -67,7 +68,7 @@ public class RecipesFragment extends Fragment implements RecipesFragmentControll
 
         recipesRv.setLayoutManager(mLinearLayoutManager);
 
-
+        countingIdle.increment();
         RecipesFragmentController recipesFragmentController = new RecipesFragmentController(getActivity(), -1);
         recipesFragmentController.setOnAdapterFinishIntializing(this);
         recipesFragmentController.setOnRecieveRecipeFromCardView(this);
@@ -82,7 +83,9 @@ public class RecipesFragment extends Fragment implements RecipesFragmentControll
             recipesRv.setAdapter(recipesRecyclerView);
             if (position != -1)
                 recipesRv.scrollToPosition(position);
+
         }
+        countingIdle.decrement();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package exampls.com.bakingapp.UI;
 
 
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -34,9 +35,11 @@ public class RecipesActivityTest {
 
     @Rule
     public ActivityTestRule<RecipesActivity> mActivityTestRule = new ActivityTestRule<>(RecipesActivity.class);
-
+    RecipesFragment recipesFragment = new RecipesFragment();
     @Test
     public void recipesActivityTest() {
+
+        Espresso.registerIdlingResources(recipesFragment.countingIdle);
         ViewInteraction appCompatImageView = onView(
                 allOf(withId(R.id.image_view),
                         withParent(allOf(withId(R.id.card_view_recipe),
