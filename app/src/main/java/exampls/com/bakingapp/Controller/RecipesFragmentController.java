@@ -1,6 +1,7 @@
 package exampls.com.bakingapp.Controller;
 
 import android.content.Context;
+import android.support.test.espresso.idling.CountingIdlingResource;
 
 import org.json.JSONArray;
 import org.json.JSONException;

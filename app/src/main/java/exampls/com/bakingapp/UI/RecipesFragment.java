@@ -85,7 +85,7 @@ public class RecipesFragment extends Fragment implements RecipesFragmentControll
                 recipesRv.scrollToPosition(position);
 
         }
-        countingIdle.decrement();
+countingIdle.decrement();
     }
 
     @Override
