@@ -57,6 +57,7 @@ public class RecipesRecyclerView extends RecyclerView.Adapter<RecipesRecyclerVie
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 onCardViewClicked.onCardClicked(recipesList.get(position));
             }
         });

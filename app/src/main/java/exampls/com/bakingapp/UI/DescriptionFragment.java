@@ -68,13 +68,15 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     boolean state = true;
     int chk = -1;
     int isDestroyed = 0;
-    Bundle bund= null;
+    Bundle bund = null;
     boolean onActivityCreated = false;
+
     public DescriptionFragment() {
     }
 
 
-    @Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         /**
          * position of the player to be stored
@@ -136,7 +138,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         return v;
     }
 
-    public void releasePlayer(){
+    public void releasePlayer() {
 
         if (exoPlayer != null) {
             position = exoPlayer.getCurrentPosition();
@@ -147,27 +149,31 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         }
 
     }
-    @Override public void onPause() {
+
+    @Override
+    public void onPause() {
         super.onPause();
         releasePlayer();
     }
 
-    @Override public void onSaveInstanceState(Bundle outState) {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putLong(SELECTED_POSITION, position);
         outState.putBoolean(STATE, state);
         outState.putInt(STEP_POSITION, getPosition());
-        bund= outState;
+        bund = outState;
     }
 
-    @Override public void onResume() {
+    @Override
+    public void onResume() {
         super.onResume();
         if (bundle == null) {
 
             descriptionTV.setText("here is will appear description");
 
         } else {
-            if(isDestroyed == 0 && !onActivityCreated){
+            if (isDestroyed == 0 && !onActivityCreated) {
                 onActivityCreated(bund);
             }
             onActivityCreated = false;
@@ -177,7 +183,8 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
     }
 
-    @Override public void onClick(View v) {
+    @Override
+    public void onClick(View v) {
         Log.e(TAG, "ON CLICK ");
         switch (v.getId()) {
             case R.id.image_iv_next_video:
