@@ -1,8 +1,8 @@
 package exampls.com.bakingapp.UI;
 
 
+import android.support.test.espresso.Espresso;
 import android.support.test.espresso.ViewInteraction;
-import android.support.test.espresso.assertion.ViewAssertions;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -14,11 +14,13 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import exampls.com.bakingapp.R;
+import exampls.com.bakingapp.SimpleIdlingResource;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -34,17 +36,34 @@ public class RecipesActivityTest {
 
     @Rule
     public ActivityTestRule<RecipesActivity> mActivityTestRule = new ActivityTestRule<>(RecipesActivity.class);
+    private SimpleIdlingResource mSimpleIdlingResource;
+
+    @Before
+    public void registeringIdlingResource() {
+
+        mSimpleIdlingResource = mActivityTestRule.getActivity().getmSimpleIdlingResource();
+
+        Espresso.registerIdlingResources(mSimpleIdlingResource);
+
+
+    }
+
     public static RecyclerViewMatcher withRecyclerView(final int recyclerViewId) {
         return new RecyclerViewMatcher(recyclerViewId);
     }
+
+
+    public void unRegisteringIdlingResource() {
+        if (mSimpleIdlingResource != null)
+            Espresso.unregisterIdlingResources(mSimpleIdlingResource);
+
+    }
+
     @Test
     public void recipesActivityTest() {
-
-
-        ViewInteraction appCompatImageView =
-                onView(withRecyclerView(R.id.recipes_rv).atPosition(1)).check(ViewAssertions.matches(isDisplayed()));
-
-                appCompatImageView.perform(click());
+        ViewInteraction appCompatImageView = onView(
+                withRecyclerView(R.id.recipes_rv).atPosition(1));
+        appCompatImageView.perform(click());
 
         ViewInteraction textView = onView(
                 allOf(withText("Brownies"),
@@ -55,6 +74,7 @@ public class RecipesActivityTest {
                                                 0)),
                                 1),
                         isDisplayed()));
+
         textView.check(matches(withText("Brownies")));
 
     }

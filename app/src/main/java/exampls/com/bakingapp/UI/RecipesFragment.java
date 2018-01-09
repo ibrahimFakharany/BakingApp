@@ -63,7 +63,7 @@ public class RecipesFragment extends Fragment implements RecipesFragmentControll
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recipes, container, false);
         recipesRv = (RecyclerView) view.findViewById(R.id.recipes_rv);
-
+        Bundle bundle = getArguments();
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
 
         recipesRv.setLayoutManager(mLinearLayoutManager);
