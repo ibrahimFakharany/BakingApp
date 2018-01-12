@@ -91,18 +91,7 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
     }
 
 
-    int checkCommited = 0;
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
 
-        Log.e(TAG, "onRestoreInstanceState");
-        if(savedInstanceState != null )
-            checkCommited = 1;
-
-        Log.e(TAG,"check commited in onRestoreInstanceState"+ checkCommited);
-
-    }
     @Override public void onStepClick(int id, int position) {
 
         Bundle bundle = new Bundle();
@@ -111,15 +100,14 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
         if (twoPane) {
 
 
-            Log.e(TAG, "check commited in onStepClick" + checkCommited);
-            if(checkCommited == 0){
+
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 DescriptionFragment descriptionFragment = new DescriptionFragment();
                 descriptionFragment.setArguments(bundle);
                 fragmentManager.beginTransaction()
                         .add(R.id.fragment_description, descriptionFragment, "Fragment")
                         .commit();
-            }
+
 
 
         } else {

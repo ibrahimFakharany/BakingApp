@@ -52,7 +52,7 @@ public class StepsFragment extends Fragment {
         super.onSaveInstanceState(outState);
         int recyclerStateBeforeRotate = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         outState.putInt("test", recyclerStateBeforeRotate);
-        outState.putBoolean(COMMITED_FRAGMENT, true);
+
     }
 
     @Override
