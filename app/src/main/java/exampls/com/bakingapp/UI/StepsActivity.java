@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcel;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,6 +19,7 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
     String TAG = "stepsActivity";
     private static final String POSITION_KEY = "position";
     boolean twoPane = false;
+    public static final String TWO_PANE = "twopane";
 
     @Override public boolean onNavigateUpFromChild(Activity child) {
         return super.onNavigateUpFromChild(child);
@@ -28,15 +28,18 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
         switch (item.getItemId()) {
             // Respond to the action bar's Up/Home button
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+                finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_steps);
-
+        Log.e(TAG, "oncreate");
         Bundle bundle = getIntent().getExtras();
         int recipeId = bundle.getInt(RecipesActivity.RECIPE_KEY);
 
@@ -59,20 +62,23 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             if (null != findViewById(R.id.fragment_description)) {
-
+                Log.e("StepsActivity", "yes two pane");
                 twoPane = true;
-                DescriptionFragment descriptionFragment = new DescriptionFragment();
+                /*DescriptionFragment descriptionFragment = new DescriptionFragment();
                 descriptionFragment.setArguments(null);
                 fragmentManager.beginTransaction()
                         .add(R.id.fragment_description, descriptionFragment)
-                        .commit();
+                        .commit();*/
+
 
             }
+            bundle.putBoolean(TWO_PANE, twoPane );
             StepsRecyclerView stepsRecyclerView = new StepsRecyclerView(recipe, this);
             stepsRecyclerView.setOnStepClicked(this);
             StepsFragment stepsFragment = new StepsFragment();
             stepsFragment.setRetainInstance(true);
             bundle.putParcelable("stepAdapter", stepsRecyclerView);
+
             stepsFragment.setArguments(bundle);
             if (savedInstanceState == null)
                 fragmentManager.beginTransaction()
@@ -84,6 +90,19 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
         }
     }
 
+
+    int checkCommited = 0;
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        Log.e(TAG, "onRestoreInstanceState");
+        if(savedInstanceState != null )
+            checkCommited = 1;
+
+        Log.e(TAG,"check commited in onRestoreInstanceState"+ checkCommited);
+
+    }
     @Override public void onStepClick(int id, int position) {
 
         Bundle bundle = new Bundle();
@@ -92,12 +111,16 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
         if (twoPane) {
 
 
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            DescriptionFragment descriptionFragment = new DescriptionFragment();
-            descriptionFragment.setArguments(bundle);
-            fragmentManager.beginTransaction()
-                    .add(R.id.fragment_description, descriptionFragment, "Fragment")
-                    .commit();
+            Log.e(TAG, "check commited in onStepClick" + checkCommited);
+            if(checkCommited == 0){
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                DescriptionFragment descriptionFragment = new DescriptionFragment();
+                descriptionFragment.setArguments(bundle);
+                fragmentManager.beginTransaction()
+                        .add(R.id.fragment_description, descriptionFragment, "Fragment")
+                        .commit();
+            }
+
 
         } else {
 

@@ -28,6 +28,7 @@ import io.realm.RealmResults;
  */
 
 public class StepsFragment extends Fragment {
+    public static final String COMMITED_FRAGMENT = "commited";
     String ingrendientsStr;
     String TAG = "stepsFragment";
     RecyclerView recyclerViewSteps;
@@ -51,6 +52,7 @@ public class StepsFragment extends Fragment {
         super.onSaveInstanceState(outState);
         int recyclerStateBeforeRotate = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         outState.putInt("test", recyclerStateBeforeRotate);
+        outState.putBoolean(COMMITED_FRAGMENT, true);
     }
 
     @Override
@@ -58,6 +60,7 @@ public class StepsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             position = savedInstanceState.getInt("test");
+            Log.e(TAG,"saved instance not equal null ");
         }
     }
 
