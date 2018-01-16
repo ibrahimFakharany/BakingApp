@@ -168,6 +168,7 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             descriptionFragment = new DescriptionFragment();
+            descriptionFragment.setArguments(savedInstanceState);
             fragmentManager.beginTransaction()
                     .add(R.id.fragment_description, descriptionFragment, "descriptionFragment")
                     .commit();

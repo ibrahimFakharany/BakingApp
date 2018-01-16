@@ -82,6 +82,12 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         /**
          * position of the player to be stored
          */
+
+
+
+    }
+    public void myOnActivityCreated(Bundle savedInstanceState){
+
         onActivityCreated = true;
         position = C.TIME_UNSET;
 
@@ -95,9 +101,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
         }
 
-
     }
-
 
     @Nullable
     @Override
@@ -123,10 +127,10 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     }
 
     public void setUpLayout() {
-
+        Log.e(TAG, "setupLayout");
         bundle = this.getArguments();
         if (bundle == null) {
-            Log.e(TAG, "setupLayout");
+
             descriptionTV.setText("description will appear");
             if (exoPlayerView.getVisibility() == View.VISIBLE)
                 exoPlayerView.setVisibility(View.GONE);
@@ -144,7 +148,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
                 steps = recipe.getSteps();
                 setListSizs(steps.size());
                 setPosition(bundle.getInt(POSITION_KEY));
-
+                myOnResume();
             }
 
         }
@@ -177,22 +181,26 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         bund = outState;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    public void myOnResume(){
+
         if (bundle == null) {
 
             descriptionTV.setText("here is will appear description");
 
         } else {
             if (isDestroyed == 0 && !onActivityCreated) {
-                onActivityCreated(bund);
+                myOnActivityCreated(bund);
             }
             onActivityCreated = false;
             if (bundle.getInt(RecipesActivity.RECIPE_KEY, -1) != -1)
                 showStep(getPosition());
         }
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
 
+        myOnResume();
 
     }
 
