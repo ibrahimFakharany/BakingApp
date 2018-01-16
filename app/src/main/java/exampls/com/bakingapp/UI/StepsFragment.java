@@ -34,7 +34,7 @@ public class StepsFragment extends Fragment {
     RecyclerView recyclerViewSteps;
     TextView ingrendientsTV;
     GridLayoutManager mLayoutManager;
-
+    String PREFERENCE_NAME = "passedPreference";
     int position = -1;
 
     Recipe recipe = null;
@@ -46,12 +46,16 @@ public class StepsFragment extends Fragment {
     public void onPause() {
         super.onPause();
     }
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+
         int recyclerStateBeforeRotate = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         outState.putInt("test", recyclerStateBeforeRotate);
+        /*SharedPreferences.Editor editor = getActivity().getSharedPreferences(PREFERENCE_NAME, MODE_PRIVATE).edit();
+        editor.putInt("test", recyclerStateBeforeRotate);
+        editor.apply();*/
+
+
 
     }
 
@@ -60,8 +64,12 @@ public class StepsFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
             position = savedInstanceState.getInt("test");
-            Log.e(TAG,"saved instance not equal null ");
         }
+        // get the scroll of the shared preference
+
+        /*SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.preferenceName), MODE_PRIVATE);
+        position = preferences.getInt("test", 0);*/
+
     }
 
     @Nullable

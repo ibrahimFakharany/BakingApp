@@ -78,12 +78,13 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
         /**
          * position of the player to be stored
          */
         onActivityCreated = true;
         position = C.TIME_UNSET;
-        setRetainInstance(true);
+
         if (savedInstanceState != null) {
 
             position = savedInstanceState.getLong(SELECTED_POSITION, C.TIME_UNSET);
@@ -104,22 +105,38 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         View v = inflater.inflate(R.layout.fragment_description, container, false);
 
         try {
-            bundle = getArguments();
+
             descriptionTV = (TextView) v.findViewById(R.id.tv);
             forwardBtn = (ImageView) v.findViewById(R.id.image_iv_next_video);
             previousBtn = (ImageView) v.findViewById(R.id.image_iv_previous_video);
+            exoPlayerView = (SimpleExoPlayerView) v.findViewById(R.id.exo_player_view);
             forwardBtn.setOnClickListener(this);
             previousBtn.setOnClickListener(this);
+            setUpLayout();
 
-            if (bundle == null) {
 
-                descriptionTV.setText("description will appear");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
 
-            } else {
+        return v;
+    }
 
-                exoPlayerView = (SimpleExoPlayerView) v.findViewById(R.id.exo_player_view);
+    public void setUpLayout() {
 
-                // getting steps of recipe
+        bundle = this.getArguments();
+        if (bundle == null) {
+            Log.e(TAG, "setupLayout");
+            descriptionTV.setText("description will appear");
+            if (exoPlayerView.getVisibility() == View.VISIBLE)
+                exoPlayerView.setVisibility(View.GONE);
+        } else {
+            if (exoPlayerView.getVisibility() == View.GONE)
+                exoPlayerView.setVisibility(View.VISIBLE);
+            // getting steps of recipe
+
+            if (bundle.getInt(RecipesActivity.RECIPE_KEY, -1) != -1) {
+
                 Realm.init(getActivity());
                 Realm realm = Realm.getDefaultInstance();
                 Recipe recipe = realm.where(Recipe.class).equalTo("id", bundle.getInt(RecipesActivity.RECIPE_KEY)).findFirst();
@@ -128,14 +145,10 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
                 setListSizs(steps.size());
                 setPosition(bundle.getInt(POSITION_KEY));
 
-
             }
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
 
-        return v;
     }
 
     public void releasePlayer() {
@@ -158,7 +171,6 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putLong(SELECTED_POSITION, position);
         outState.putBoolean(STATE, state);
         outState.putInt(STEP_POSITION, getPosition());
@@ -177,7 +189,8 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
                 onActivityCreated(bund);
             }
             onActivityCreated = false;
-            showStep(getPosition());
+            if (bundle.getInt(RecipesActivity.RECIPE_KEY, -1) != -1)
+                showStep(getPosition());
         }
 
 
@@ -214,6 +227,9 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
      **/
     private void showStep(int position) {
         Step step = getStep(position);
+        Log.e(TAG, position + "");
+        if (step == null)
+            Log.e(TAG, "step is null");
         String description = step.getDescription();
         String url = step.getVideoURL();
         if (url.length() > 0) {
