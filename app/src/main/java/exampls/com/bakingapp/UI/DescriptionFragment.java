@@ -51,6 +51,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     // as position var is in the bundle is the current position of the player when the device is rotated
     private static final String SELECTED_POSITION = "position", STATE = "state";
     private static final String STEP_POSITION = "stepposition";
+    private static boolean ENTERED_MY_ONRESUME = true;
     SimpleExoPlayerView exoPlayerView;
     SimpleExoPlayer exoPlayer;
     private DataSource.Factory mediaDataSourceFactory;
@@ -79,14 +80,11 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        /**
-         * position of the player to be stored
-         */
-
-
-
+        if (!onActivityCreated)
+            myOnActivityCreated(savedInstanceState);
     }
-    public void myOnActivityCreated(Bundle savedInstanceState){
+
+    public void myOnActivityCreated(Bundle savedInstanceState) {
 
         onActivityCreated = true;
         position = C.TIME_UNSET;
@@ -126,17 +124,21 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         return v;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isDestroyed = 1;
+    }
+
     public void setUpLayout() {
-        Log.e(TAG, "setupLayout");
+        releasePlayer();
         bundle = this.getArguments();
         if (bundle == null) {
 
             descriptionTV.setText("description will appear");
-            if (exoPlayerView.getVisibility() == View.VISIBLE)
-                exoPlayerView.setVisibility(View.GONE);
+
         } else {
-            if (exoPlayerView.getVisibility() == View.GONE)
-                exoPlayerView.setVisibility(View.VISIBLE);
+
             // getting steps of recipe
 
             if (bundle.getInt(RecipesActivity.RECIPE_KEY, -1) != -1) {
@@ -175,19 +177,25 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
         outState.putLong(SELECTED_POSITION, position);
         outState.putBoolean(STATE, state);
         outState.putInt(STEP_POSITION, getPosition());
         bund = outState;
+        outState.putInt("descriptionFragment", 1);
+
+
     }
 
-    public void myOnResume(){
-
+    public void myOnResume() {
+        ENTERED_MY_ONRESUME = true;
         if (bundle == null) {
-
             descriptionTV.setText("here is will appear description");
 
         } else {
+
+
             if (isDestroyed == 0 && !onActivityCreated) {
                 myOnActivityCreated(bund);
             }
@@ -196,11 +204,13 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
                 showStep(getPosition());
         }
     }
+
     @Override
     public void onResume() {
         super.onResume();
 
-        myOnResume();
+        if (!ENTERED_MY_ONRESUME)
+            myOnResume();
 
     }
 
@@ -235,9 +245,10 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
      **/
     private void showStep(int position) {
         Step step = getStep(position);
-        Log.e(TAG, position + "");
-        if (step == null)
+        if (step == null) {
             Log.e(TAG, "step is null");
+            return;
+        }
         String description = step.getDescription();
         String url = step.getVideoURL();
         if (url.length() > 0) {
@@ -381,9 +392,5 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         else return null;
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        isDestroyed = 1;
-    }
+
 }

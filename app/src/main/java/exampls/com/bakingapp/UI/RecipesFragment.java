@@ -1,7 +1,6 @@
 package exampls.com.bakingapp.UI;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -104,10 +103,7 @@ public class RecipesFragment extends Fragment implements RecipesFragmentControll
         super.onResume();
 
         // deleting the sharedpreference that store the position of the recyclerview
-        String preferenceName = getString(R.string.preferenceName);
 
-        SharedPreferences stepsActivityPref = getActivity().getSharedPreferences(preferenceName, Context.MODE_PRIVATE);
-        stepsActivityPref.edit().clear().commit();
 
     }
 

@@ -48,15 +48,10 @@ public class StepsFragment extends Fragment {
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
-
+        super.onSaveInstanceState(outState);
+        Log.e(TAG, "onSaveInstanceState");
         int recyclerStateBeforeRotate = mLayoutManager.findFirstCompletelyVisibleItemPosition();
         outState.putInt("test", recyclerStateBeforeRotate);
-        /*SharedPreferences.Editor editor = getActivity().getSharedPreferences(PREFERENCE_NAME, MODE_PRIVATE).edit();
-        editor.putInt("test", recyclerStateBeforeRotate);
-        editor.apply();*/
-
-
-
     }
 
     @Override
@@ -65,11 +60,6 @@ public class StepsFragment extends Fragment {
         if (savedInstanceState != null) {
             position = savedInstanceState.getInt("test");
         }
-        // get the scroll of the shared preference
-
-        /*SharedPreferences preferences = getActivity().getSharedPreferences(getString(R.string.preferenceName), MODE_PRIVATE);
-        position = preferences.getInt("test", 0);*/
-
     }
 
     @Nullable
