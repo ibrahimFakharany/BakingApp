@@ -1,7 +1,6 @@
 package exampls.com.bakingapp.Controller;
 
 import android.content.Context;
-import android.support.test.espresso.idling.CountingIdlingResource;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +26,7 @@ public class RecipesFragmentController {
     private final String TAG = "RecipesController";
     Recipe recipe = null;
     OnAdapterFinishIntializing onAdapterFinishIntializing;
-    OnStepAdapterFinishIntializing onStepAdapterFinishIntializing;
+    //OnStepAdapterFinishIntializing onStepAdapterFinishIntializing;
     OnRecieveRecipeFromCardView onRecieveRecipeFromCardView;
 
     public void setOnRecieveStepListener(OnRecieveStepListener onRecieveStepListener) {
@@ -51,9 +50,9 @@ public class RecipesFragmentController {
         this.onAdapterFinishIntializing = onAdapterFinishIntializing;
     }
 
-    public void setOnStepAdapterFinishIntializing(OnStepAdapterFinishIntializing onStepAdapterFinishIntializing) {
+    /*public void setOnStepAdapterFinishIntializing(OnStepAdapterFinishIntializing onStepAdapterFinishIntializing) {
         this.onStepAdapterFinishIntializing = onStepAdapterFinishIntializing;
-    }
+    }*/
 
     public interface OnRecieveRecipeFromCardView {
         void onRecieve(Recipe recipe);
@@ -68,9 +67,9 @@ public class RecipesFragmentController {
         void passAdapter(RecipesRecyclerView recipesRecyclerView);
     }
 
-    public interface OnStepAdapterFinishIntializing {
+    /*public interface OnStepAdapterFinishIntializing {
         void passAdapter(StepsRecyclerView stepsRecyclerView);
-    }
+    }*/
 
     public void getOnlineResponse() {
 

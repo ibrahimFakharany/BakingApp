@@ -3,19 +3,17 @@ package exampls.com.bakingapp.UI;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcel;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import exampls.com.bakingapp.Controller.StepsRecyclerView;
 import exampls.com.bakingapp.R;
 import exampls.com.bakingapp.data.Recipe;
 import io.realm.Realm;
 
-public class StepsActivity extends AppCompatActivity implements StepsRecyclerView.OnStepClicked {
+public class StepsActivity extends AppCompatActivity implements StepsFragment.FragmentListener{
     String TAG = "stepsActivity";
     private static final String POSITION_KEY = "position";
     boolean twoPane = false;
@@ -44,6 +42,7 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_steps);
+        Log.e(TAG, "oncreate");
         Bundle bundle = getIntent().getExtras();
         int recipeId = bundle.getInt(RecipesActivity.RECIPE_KEY);
 
@@ -97,69 +96,30 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
             }
 
             bundle.putBoolean(TWO_PANE, twoPane);
-            StepsRecyclerView stepsRecyclerView = new StepsRecyclerView(recipe, this);
-            stepsRecyclerView.setOnStepClicked(this);
-            StepsFragment stepsFragment = new StepsFragment();
-            bundle.putParcelable("stepAdapter", stepsRecyclerView);
 
+
+            StepsFragment stepsFragment = new StepsFragment();
+            stepsFragment.setFragmentListener(this);
             stepsFragment.setArguments(bundle);
             if (savedInstanceState == null)
                 fragmentManager.beginTransaction()
                         .add(R.id.fragment_steps, stepsFragment, "").commit();
+
+            else
+                fragmentManager.beginTransaction()
+                        .replace(R.id.fragment_steps, stepsFragment, "").commit();
         } else {
 
         }
     }
 
 
-    @Override
-    public void onStepClick(int id, int position) {
 
-        Bundle bundle = new Bundle();
-        bundle.putInt(RecipesActivity.RECIPE_KEY, id);
-        bundle.putInt(POSITION_KEY, position);
-        if (twoPane) {
-                descriptionFragment.getArguments().putInt(RecipesActivity.RECIPE_KEY, id);
-                descriptionFragment.getArguments().putInt(POSITION_KEY, position);
-                Log.e(TAG, "before setup layout");
-                descriptionFragment.setUpLayout();
-        } else {
-            Intent intent = new Intent(this, DescriptionActivity.class);
-            intent.putExtras(bundle);
-            startActivity(intent);
-        }
-
-
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.TAG);
-    }
 
     public StepsActivity() {
     }
 
-    protected StepsActivity(Parcel in) {
-        this.TAG = in.readString();
-    }
 
-    public static final Creator<StepsActivity> CREATOR = new Creator<StepsActivity>() {
-        @Override
-        public StepsActivity createFromParcel(Parcel source) {
-            return new StepsActivity(source);
-        }
-
-        @Override
-        public StepsActivity[] newArray(int size) {
-            return new StepsActivity[size];
-        }
-    };
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -176,5 +136,23 @@ public class StepsActivity extends AppCompatActivity implements StepsRecyclerVie
     @Override
     protected void onResume() {
         super.onResume();
+    }
+
+    @Override
+    public void onStepClickFragment(int id, int position) {
+        Bundle bundle = new Bundle();
+        bundle.putInt(RecipesActivity.RECIPE_KEY, id);
+        bundle.putInt(POSITION_KEY, position);
+        if (twoPane) {
+            descriptionFragment.getArguments().putInt(RecipesActivity.RECIPE_KEY, id);
+            descriptionFragment.getArguments().putInt(POSITION_KEY, position);
+            Log.e(TAG, "before setup layout");
+            descriptionFragment.setUpLayout();
+        } else {
+            Intent intent = new Intent(this, DescriptionActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
+        }
+
     }
 }
