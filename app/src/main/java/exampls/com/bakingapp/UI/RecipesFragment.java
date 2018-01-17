@@ -102,7 +102,6 @@ public class RecipesFragment extends Fragment implements RecipesFragmentControll
     public void onResume() {
         super.onResume();
 
-        // deleting the sharedpreference that store the position of the recyclerview
 
 
     }
