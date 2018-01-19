@@ -20,6 +20,7 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
     public static final String TWO_PANE = "twopane";
     boolean enteredOnRestoreInstanceState = false;
     DescriptionFragment descriptionFragment = null;
+    FragmentManager fragmentManager1 = null;
 
     @Override
     public boolean onNavigateUpFromChild(Activity child) {
@@ -67,7 +68,7 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
                 twoPane = true;
 
 
-                FragmentManager fragmentManager1 = getSupportFragmentManager();
+                fragmentManager1 = getSupportFragmentManager();
                 descriptionFragment = new DescriptionFragment();
                 if (savedInstanceState == null) {
                     descriptionFragment.setArguments(new Bundle());
@@ -138,15 +139,13 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
         bundle.putInt(RecipesActivity.RECIPE_KEY, id);
         bundle.putInt(POSITION_KEY, position);
         if (twoPane) {
+            DescriptionFragment myDescriptionFragment = (DescriptionFragment) fragmentManager1.findFragmentByTag("descriptionFragment");
             /*i deleted all the check if the savedinstance not null, but how to get the arguments from the description fragment after it restores, i want to get it to put  */
-            if(descriptionFragment.getArguments() == null ){
-                descriptionFragment.setUpLayout(id,position);
-            }else {
-                descriptionFragment.getArguments().putInt(RecipesActivity.RECIPE_KEY, id);
-                descriptionFragment.getArguments().putInt(POSITION_KEY, position);
-                Log.e(TAG, "before setup layout");
-                descriptionFragment.setUpLayout(-1,-1);
-            }
+            myDescriptionFragment.getArguments().putInt(RecipesActivity.RECIPE_KEY, id);
+            myDescriptionFragment.getArguments().putInt(POSITION_KEY, position);
+            Log.e(TAG, "before setup layout");
+            myDescriptionFragment.setUpLayout(-1, -1);
+
 
         } else {
             Intent intent = new Intent(this, DescriptionActivity.class);
