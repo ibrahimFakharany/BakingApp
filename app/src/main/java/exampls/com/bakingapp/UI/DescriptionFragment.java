@@ -71,6 +71,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     int isDestroyed = 0;
     Bundle bund = null;
     boolean onActivityCreated = false;
+    public int recipeId = -1;
 
     public DescriptionFragment() {
     }
@@ -114,7 +115,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
             exoPlayerView = (SimpleExoPlayerView) v.findViewById(R.id.exo_player_view);
             forwardBtn.setOnClickListener(this);
             previousBtn.setOnClickListener(this);
-            setUpLayout();
+            setUpLayout(-1, -1);
 
 
         } catch (Exception ex) {
@@ -130,30 +131,34 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         isDestroyed = 1;
     }
 
-    public void setUpLayout() {
+    public void setUpLayout(int recipeId, int position) {
+        Log.e(TAG, "setup Layout");
+
         releasePlayer();
         bundle = this.getArguments();
-        if (bundle == null) {
-
-            descriptionTV.setText("description will appear");
-
-        } else {
-
+        if (bundle != null) {
             // getting steps of recipe
-
             if (bundle.getInt(RecipesActivity.RECIPE_KEY, -1) != -1) {
-
                 Realm.init(getActivity());
                 Realm realm = Realm.getDefaultInstance();
                 Recipe recipe = realm.where(Recipe.class).equalTo("id", bundle.getInt(RecipesActivity.RECIPE_KEY)).findFirst();
-
                 steps = recipe.getSteps();
                 setListSizs(steps.size());
+                setRecipeId(-1);
                 setPosition(bundle.getInt(POSITION_KEY));
                 myOnResume();
             }
-
+        } else {
+            Realm.init(getActivity());
+            Realm realm = Realm.getDefaultInstance();
+            Recipe recipe = realm.where(Recipe.class).equalTo("id", recipeId).findFirst();
+            steps = recipe.getSteps();
+            setListSizs(steps.size());
+            setRecipeId(recipeId);
+            setPosition(position);
+            myOnResume();
         }
+
 
     }
 
@@ -183,26 +188,25 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         outState.putBoolean(STATE, state);
         outState.putInt(STEP_POSITION, getPosition());
         bund = outState;
-        outState.putInt("descriptionFragment", 1);
-
-
     }
 
     public void myOnResume() {
         ENTERED_MY_ONRESUME = true;
-        if (bundle == null) {
-            descriptionTV.setText("here is will appear description");
-
-        } else {
 
 
-            if (isDestroyed == 0 && !onActivityCreated) {
-                myOnActivityCreated(bund);
-            }
-            onActivityCreated = false;
+        if (isDestroyed == 0 && !onActivityCreated) {
+            myOnActivityCreated(bund);
+        }
+        onActivityCreated = false;
+        if (bundle != null) {
             if (bundle.getInt(RecipesActivity.RECIPE_KEY, -1) != -1)
                 showStep(getPosition());
+        } else {
+            if (getRecipeId() != -1)
+                showStep(getPosition());
         }
+
+
     }
 
     @Override
@@ -253,11 +257,14 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         String url = step.getVideoURL();
         if (url.length() > 0) {
             if (!isVisible(exoPlayerView)) {
-                makeshowViews(exoPlayerView);
+                if (exoPlayerView != null)
+                    makeshowViews(exoPlayerView);
             }
             showPlayer(url);
-        } else
-            makeHiddenViews(exoPlayerView);
+        } else {
+            if (exoPlayerView != null)
+                makeHiddenViews(exoPlayerView);
+        }
 
         showDescription(description);
     }
@@ -393,4 +400,11 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     }
 
 
+    public int getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(int recipeId) {
+        this.recipeId = recipeId;
+    }
 }

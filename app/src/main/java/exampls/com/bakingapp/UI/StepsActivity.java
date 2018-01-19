@@ -13,7 +13,7 @@ import exampls.com.bakingapp.R;
 import exampls.com.bakingapp.data.Recipe;
 import io.realm.Realm;
 
-public class StepsActivity extends AppCompatActivity implements StepsFragment.FragmentListener{
+public class StepsActivity extends AppCompatActivity implements StepsFragment.FragmentListener {
     String TAG = "stepsActivity";
     private static final String POSITION_KEY = "position";
     boolean twoPane = false;
@@ -69,28 +69,26 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
 
                 FragmentManager fragmentManager1 = getSupportFragmentManager();
                 descriptionFragment = new DescriptionFragment();
-                if (savedInstanceState == null)
-
+                if (savedInstanceState == null) {
                     descriptionFragment.setArguments(new Bundle());
-                else
-                    descriptionFragment.setArguments(savedInstanceState);
+                    fragmentManager1.beginTransaction()
+                            .add(R.id.fragment_description, descriptionFragment, "descriptionFragment")
+                            .commitNow();
+                }
+                /*else
+                    descriptionFragment.setArguments(savedInstanceState);*/
 
-                fragmentManager1.beginTransaction()
-                        .add(R.id.fragment_description, descriptionFragment, "descriptionFragment")
-                        .commitNow();
 
                 Log.e(TAG, "descriptionfragment commited");
 
-                if(getSupportFragmentManager().findFragmentByTag("descriptionFragment") == null){
+                if (getSupportFragmentManager().findFragmentByTag("descriptionFragment") == null) {
 
                     Log.e(TAG, "try find descriptionfragment: not commited");
-                }
-                else{
+                } else {
                     Log.e(TAG, "try find descriptionfragment: sure commited");
 
 
                 }
-
 
 
             }
@@ -101,24 +99,20 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
             StepsFragment stepsFragment = new StepsFragment();
             stepsFragment.setFragmentListener(this);
             stepsFragment.setArguments(bundle);
-            if (savedInstanceState == null)
-                fragmentManager.beginTransaction()
-                        .add(R.id.fragment_steps, stepsFragment, "").commit();
 
-            else
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment_steps, stepsFragment, "").commit();
+            //if (savedInstanceState == null)
+            fragmentManager.beginTransaction()
+                    .add(R.id.fragment_steps, stepsFragment, "").commit();
+
+
         } else {
 
         }
     }
 
 
-
-
     public StepsActivity() {
     }
-
 
 
     @Override
@@ -144,10 +138,16 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
         bundle.putInt(RecipesActivity.RECIPE_KEY, id);
         bundle.putInt(POSITION_KEY, position);
         if (twoPane) {
-            descriptionFragment.getArguments().putInt(RecipesActivity.RECIPE_KEY, id);
-            descriptionFragment.getArguments().putInt(POSITION_KEY, position);
-            Log.e(TAG, "before setup layout");
-            descriptionFragment.setUpLayout();
+            /*i deleted all the check if the savedinstance not null, but how to get the arguments from the description fragment after it restores, i want to get it to put  */
+            if(descriptionFragment.getArguments() == null ){
+                descriptionFragment.setUpLayout(id,position);
+            }else {
+                descriptionFragment.getArguments().putInt(RecipesActivity.RECIPE_KEY, id);
+                descriptionFragment.getArguments().putInt(POSITION_KEY, position);
+                Log.e(TAG, "before setup layout");
+                descriptionFragment.setUpLayout(-1,-1);
+            }
+
         } else {
             Intent intent = new Intent(this, DescriptionActivity.class);
             intent.putExtras(bundle);
