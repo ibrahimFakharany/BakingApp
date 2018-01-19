@@ -57,7 +57,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     Handler mainHandler;
     TextView descriptionTV;
     int stepPosition;
-    long position;
+    long position = -1 ;
     ImageView forwardBtn;
     ImageView previousBtn;
     Uri videoURI;
