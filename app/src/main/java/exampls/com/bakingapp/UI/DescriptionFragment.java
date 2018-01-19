@@ -106,7 +106,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_description, container, false);
-
+        Log.e(TAG, "onCreateView");
         try {
 
             descriptionTV = (TextView) v.findViewById(R.id.tv);
