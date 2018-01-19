@@ -44,12 +44,11 @@ import io.realm.RealmList;
 public class DescriptionFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = "descriptionfragment";
     // position key is a var for position of the step in the step list
-    private static final String POSITION_KEY = "position";
-    public static final String STEP_KEY = "steps";
+    private static final String POSITION_KEY = "POSITION_KEY";
     // selected position is a key of the var that is stored in
     // bundle -> bundle.putLong(SELECTED_POSITION , position)
     // as position var is in the bundle is the current position of the player when the device is rotated
-    private static final String SELECTED_POSITION = "position", STATE = "state";
+    public static final String SELECTED_POSITION = "positionn", STATE = "state";
     private static final String STEP_POSITION = "stepposition";
     private static boolean ENTERED_MY_ONRESUME = true;
     SimpleExoPlayerView exoPlayerView;
@@ -183,7 +182,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
+        Log.e(TAG,"position in savedinstance State is "+ position );
         outState.putLong(SELECTED_POSITION, position);
         outState.putBoolean(STATE, state);
         outState.putInt(STEP_POSITION, getPosition());
@@ -291,16 +290,21 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
                 exoPlayerView.setPlayer(exoPlayer);
 
+                Log.e(TAG, "position "+ bundle.getLong( SELECTED_POSITION, -1 ) );
+                if ((bundle != null) && ( bundle.getLong( SELECTED_POSITION, -1 ) != -1 )) {
+                    Log.e(TAG, "in show player bundle is not null");
+                    exoPlayer.seekTo(bundle.getLong(SELECTED_POSITION));
+                    exoPlayer.prepare(mediaSource);
+                    exoPlayer.setPlayWhenReady(bundle.getBoolean(STATE));
+                }else{
+                    Log.e(TAG, "in show player bundle is" +
+                            " null");
 
-                if (chk != -1) {
-                    exoPlayer.seekTo(position);
-
-                    exoPlayer.setPlayWhenReady(state);
+                    exoPlayer.prepare(mediaSource);
+                    exoPlayer.setPlayWhenReady(true);
                 }
 
-                exoPlayer.prepare(mediaSource);
-                if (chk == -1)
-                    exoPlayer.setPlayWhenReady(true);
+
 
             } else {
 
@@ -315,7 +319,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     }
 
     /**
-     * method to put the description text in textviiew
+     * method to put the description text in textview
      * called in showStep method and oncreateview callback
      **/
     private void showDescription(String description) {

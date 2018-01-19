@@ -75,39 +75,19 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
                     fragmentManager1.beginTransaction()
                             .add(R.id.fragment_description, descriptionFragment, "descriptionFragment")
                             .commitNow();
-                }
-                /*else
-                    descriptionFragment.setArguments(savedInstanceState);*/
-
-
-                Log.e(TAG, "descriptionfragment commited");
-
-                if (getSupportFragmentManager().findFragmentByTag("descriptionFragment") == null) {
-
-                    Log.e(TAG, "try find descriptionfragment: not commited");
                 } else {
-                    Log.e(TAG, "try find descriptionfragment: sure commited");
-
-
+                    Log.e(TAG, "position in onCreate " + savedInstanceState.getLong(DescriptionFragment.SELECTED_POSITION));
                 }
-
-
             }
 
-            bundle.putBoolean(TWO_PANE, twoPane);
 
-
-            StepsFragment stepsFragment = new StepsFragment();
-            stepsFragment.setFragmentListener(this);
-            stepsFragment.setArguments(bundle);
-
-            //if (savedInstanceState == null)
-            fragmentManager.beginTransaction()
-                    .add(R.id.fragment_steps, stepsFragment, "").commit();
-
-
-        } else {
-
+            if (savedInstanceState == null) {
+                bundle.putBoolean(TWO_PANE, twoPane);
+                StepsFragment stepsFragment = new StepsFragment();
+                stepsFragment.setArguments(bundle);
+                fragmentManager.beginTransaction()
+                        .add(R.id.fragment_steps, stepsFragment, "").commit();
+            }
         }
     }
 

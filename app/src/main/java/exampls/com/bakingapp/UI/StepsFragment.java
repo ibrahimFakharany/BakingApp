@@ -48,7 +48,8 @@ class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.MyViewHol
     }
 
     public void setOnStepClicked(StepsRecyclerView.OnStepClicked onStepClicked) {
-        this.onStepClicked = onStepClicked;
+        if (onStepClicked != null)
+            this.onStepClicked = onStepClicked;
     }
 
     public interface OnStepClicked {
@@ -63,7 +64,7 @@ class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.MyViewHol
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder,final int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         if (position == 0) {
 
             String ingredients = "";
@@ -126,7 +127,7 @@ class StepsRecyclerView extends RecyclerView.Adapter<StepsRecyclerView.MyViewHol
 
 }
 
-public class StepsFragment extends Fragment implements StepsRecyclerView.OnStepClicked{
+public class StepsFragment extends Fragment implements StepsRecyclerView.OnStepClicked {
     public static final String COMMITED_FRAGMENT = "commited";
     String ingrendientsStr;
     String TAG = "stepsFragment";
@@ -139,18 +140,25 @@ public class StepsFragment extends Fragment implements StepsRecyclerView.OnStepC
     Recipe recipe = null;
     FragmentListener fragmentListener = null;
 
-    public void setFragmentListener(FragmentListener fragmentListener) {
-        this.fragmentListener = fragmentListener;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof FragmentListener) {
+            fragmentListener = (FragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " context must implement FragmentListener");
+        }
     }
 
-    public interface FragmentListener{
-
-
-        public void onStepClickFragment(int id, int position);
-
-
+    public interface FragmentListener {
+        void onStepClickFragment(int id, int position);
     }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        fragmentListener = null;
+    }
 
     public StepsFragment() {
     }
@@ -262,6 +270,7 @@ public class StepsFragment extends Fragment implements StepsRecyclerView.OnStepC
 
     @Override
     public void onStepClick(int id, int position) {
-        fragmentListener.onStepClickFragment(id, position);
+        if (fragmentListener != null)
+            fragmentListener.onStepClickFragment(id, position);
     }
 }
