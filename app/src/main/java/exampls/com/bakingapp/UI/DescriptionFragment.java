@@ -39,12 +39,10 @@ import io.realm.RealmList;
 /**
  * this class to show the video player and description of the step
  */
-
-
 public class DescriptionFragment extends Fragment implements View.OnClickListener {
     public static final String TAG = "descriptionfragment";
     // position key is a var for position of the step in the step list
-    private static final String POSITION_KEY = "POSITION_KEY";
+    private static final String POSITION_KEY = "position";
     // selected position is a key of the var that is stored in
     // bundle -> bundle.putLong(SELECTED_POSITION , position)
     // as position var is in the bundle is the current position of the player when the device is rotated
@@ -73,6 +71,8 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     public int recipeId = -1;
 
     public DescriptionFragment() {
+
+
     }
 
 
@@ -122,6 +122,12 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         }
 
         return v;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.e(TAG, "descriptionfragment onCreate");
     }
 
     @Override

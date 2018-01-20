@@ -18,9 +18,8 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
     private static final String POSITION_KEY = "position";
     boolean twoPane = false;
     public static final String TWO_PANE = "twopane";
-    boolean enteredOnRestoreInstanceState = false;
     DescriptionFragment descriptionFragment = null;
-    FragmentManager fragmentManager1 = null;
+    FragmentManager fragmentManager = null;
 
     @Override
     public boolean onNavigateUpFromChild(Activity child) {
@@ -62,21 +61,21 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
         }
         if (recipe != null) {
             getSupportActionBar().setTitle(recipe.getName());
-            FragmentManager fragmentManager = getSupportFragmentManager();
-
+            fragmentManager = getSupportFragmentManager();
             if (null != findViewById(R.id.fragment_description)) {
                 twoPane = true;
 
 
-                fragmentManager1 = getSupportFragmentManager();
+
                 descriptionFragment = new DescriptionFragment();
                 if (savedInstanceState == null) {
+                    Log.e(TAG, "savedInstanceState not null");
                     descriptionFragment.setArguments(new Bundle());
-                    fragmentManager1.beginTransaction()
+                    fragmentManager.beginTransaction()
                             .add(R.id.fragment_description, descriptionFragment, "descriptionFragment")
                             .commitNow();
                 } else {
-                    Log.e(TAG, "position in onCreate " + savedInstanceState.getLong(DescriptionFragment.SELECTED_POSITION));
+                    Log.e(TAG, "savedInstanceState not null");
                 }
             }
 
@@ -90,36 +89,25 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
             }
         }
     }
-
-
-    public StepsActivity() {
-    }
-
-
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
     }
-
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-
     }
-
     @Override
     protected void onResume() {
         super.onResume();
     }
-
     @Override
     public void onStepClickFragment(int id, int position) {
         Bundle bundle = new Bundle();
         bundle.putInt(RecipesActivity.RECIPE_KEY, id);
         bundle.putInt(POSITION_KEY, position);
         if (twoPane) {
-            DescriptionFragment myDescriptionFragment = (DescriptionFragment) fragmentManager1.findFragmentByTag("descriptionFragment");
+            DescriptionFragment myDescriptionFragment = (DescriptionFragment) fragmentManager.findFragmentByTag("descriptionFragment");
             /*i deleted all the check if the savedinstance not null, but how to get the arguments from the description fragment after it restores, i want to get it to put  */
             myDescriptionFragment.getArguments().putInt(RecipesActivity.RECIPE_KEY, id);
             myDescriptionFragment.getArguments().putInt(POSITION_KEY, position);
