@@ -17,6 +17,7 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
     String TAG = "stepsActivity";
     private static final String POSITION_KEY = "position";
     boolean twoPane = false;
+    public static final java.lang.String TWO_PANE_KEY = "TWO_PANE";
     public static final String TWO_PANE = "twopane";
     DescriptionFragment descriptionFragment = null;
     FragmentManager fragmentManager = null;
@@ -106,18 +107,20 @@ public class StepsActivity extends AppCompatActivity implements StepsFragment.Fr
         Bundle bundle = new Bundle();
         bundle.putInt(RecipesActivity.RECIPE_KEY, id);
         bundle.putInt(POSITION_KEY, position);
+
         if (twoPane) {
             DescriptionFragment myDescriptionFragment = (DescriptionFragment) fragmentManager.findFragmentByTag("descriptionFragment");
             /*i deleted all the check if the savedinstance not null, but how to get the arguments from the description fragment after it restores, i want to get it to put  */
             myDescriptionFragment.getArguments().putInt(RecipesActivity.RECIPE_KEY, id);
             myDescriptionFragment.getArguments().putInt(POSITION_KEY, position);
+            myDescriptionFragment.getArguments().putBoolean(TWO_PANE_KEY, true);
             Log.e(TAG, "before setup layout");
             myDescriptionFragment.setUpLayout(-1, -1);
-
-
         } else {
             Intent intent = new Intent(this, DescriptionActivity.class);
+             bundle.putBoolean(TWO_PANE_KEY, false);
             intent.putExtras(bundle);
+
             startActivity(intent);
         }
 

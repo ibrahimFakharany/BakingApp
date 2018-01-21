@@ -48,6 +48,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     // as position var is in the bundle is the current position of the player when the device is rotated
     public static final String SELECTED_POSITION = "positionn", STATE = "state";
     private static final String STEP_POSITION = "stepposition";
+    public static final java.lang.String TWO_PANE_KEY = "TWO_PANE";
     private static boolean ENTERED_MY_ONRESUME = true;
     SimpleExoPlayerView exoPlayerView;
     SimpleExoPlayer exoPlayer;
@@ -55,7 +56,7 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     Handler mainHandler;
     TextView descriptionTV;
     int stepPosition;
-    long position = -1 ;
+    long position = -1;
     ImageView forwardBtn;
     ImageView previousBtn;
     Uri videoURI;
@@ -69,6 +70,9 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     Bundle bund = null;
     boolean onActivityCreated = false;
     public int recipeId = -1;
+    Bundle savedInstanceState = null;
+    boolean ONCREATEVIEW = false;
+    boolean TWO_PANE = false;
 
     public DescriptionFragment() {
 
@@ -90,13 +94,10 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         position = C.TIME_UNSET;
 
         if (savedInstanceState != null) {
-
             position = savedInstanceState.getLong(SELECTED_POSITION, C.TIME_UNSET);
             state = savedInstanceState.getBoolean(STATE);
             stepPosition = savedInstanceState.getInt(STEP_POSITION);
-
             chk = 1;
-
         }
 
     }
@@ -107,7 +108,8 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
         View v = inflater.inflate(R.layout.fragment_description, container, false);
         Log.e(TAG, "onCreateView");
         try {
-
+            ONCREATEVIEW = true;
+            this.savedInstanceState = savedInstanceState;
             descriptionTV = (TextView) v.findViewById(R.id.tv);
             forwardBtn = (ImageView) v.findViewById(R.id.image_iv_next_video);
             previousBtn = (ImageView) v.findViewById(R.id.image_iv_previous_video);
@@ -127,12 +129,12 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.e(TAG, "descriptionfragment onCreate");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.e(TAG, "onDestroy");
         isDestroyed = 1;
     }
 
@@ -141,19 +143,36 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
 
         releasePlayer();
         bundle = this.getArguments();
-        if (bundle != null) {
+        TWO_PANE = bundle.getBoolean(TWO_PANE_KEY);
+        if (savedInstanceState != null && ONCREATEVIEW) {
+            Log.e(TAG, "Setup Layout savedInstanceState != null && ONCREATEVIEW = true");
+
+
+            Realm.init(getActivity());
+            Realm realm = Realm.getDefaultInstance();
+            Recipe recipe = realm.where(Recipe.class).equalTo("id", bundle.getInt(RecipesActivity.RECIPE_KEY)).findFirst();
+            steps = recipe.getSteps();
+            setListSizs(steps.size());
+            setRecipeId(-1);
+
+            setPosition(savedInstanceState.getInt(POSITION_KEY));
+            myOnResume();
+        } else if (bundle != null) {
             // getting steps of recipe
-            if (bundle.getInt(RecipesActivity.RECIPE_KEY, -1) != -1) {
-                Realm.init(getActivity());
-                Realm realm = Realm.getDefaultInstance();
-                Recipe recipe = realm.where(Recipe.class).equalTo("id", bundle.getInt(RecipesActivity.RECIPE_KEY)).findFirst();
-                steps = recipe.getSteps();
-                setListSizs(steps.size());
-                setRecipeId(-1);
-                setPosition(bundle.getInt(POSITION_KEY));
-                myOnResume();
-            }
+
+            Log.e(TAG, "setupLayout bundle != null");
+            Realm.init(getActivity());
+            Realm realm = Realm.getDefaultInstance();
+            Recipe recipe = realm.where(Recipe.class).equalTo("id", bundle.getInt(RecipesActivity.RECIPE_KEY)).findFirst();
+            steps = recipe.getSteps();
+            setListSizs(steps.size());
+            setRecipeId(-1);
+            Log.e(TAG, bundle.getInt(POSITION_KEY) + "");
+            setPosition(bundle.getInt(POSITION_KEY));
+            myOnResume();
+
         } else {
+            Log.e(TAG, "setupLayout else");
             Realm.init(getActivity());
             Realm realm = Realm.getDefaultInstance();
             Recipe recipe = realm.where(Recipe.class).equalTo("id", recipeId).findFirst();
@@ -188,25 +207,35 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.e(TAG,"position in savedinstance State is "+ position );
         outState.putLong(SELECTED_POSITION, position);
         outState.putBoolean(STATE, state);
         outState.putInt(STEP_POSITION, getPosition());
+        outState.putBoolean(TWO_PANE_KEY, TWO_PANE);
         bund = outState;
     }
 
     public void myOnResume() {
         ENTERED_MY_ONRESUME = true;
 
+        Log.e(TAG, "myOnResume");
 
         if (isDestroyed == 0 && !onActivityCreated) {
+            Log.e(TAG, "myOnResume isDestroyed == 0 && onActivityCreated ");
             myOnActivityCreated(bund);
         }
         onActivityCreated = false;
-        if (bundle != null) {
+        if (savedInstanceState != null && ONCREATEVIEW) {
+            Log.e(TAG, "myOnResume savedInstanceState != null");
+
+            showStep(savedInstanceState.getInt(STEP_POSITION, -1));
+        } else if (bundle != null) {
+            Log.e(TAG, "myOnResume bundle != null");
+
             if (bundle.getInt(RecipesActivity.RECIPE_KEY, -1) != -1)
                 showStep(getPosition());
         } else {
+            Log.e(TAG, "myOnResume else");
+
             if (getRecipeId() != -1)
                 showStep(getPosition());
         }
@@ -218,18 +247,24 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
     public void onResume() {
         super.onResume();
 
-        if (!ENTERED_MY_ONRESUME)
+        if (!ENTERED_MY_ONRESUME) {
+            Log.e(TAG, "onResume !ENTERED_MY_ONRESUME");
             myOnResume();
+
+
+        }
 
     }
 
     @Override
     public void onClick(View v) {
         Log.e(TAG, "ON CLICK ");
+        ONCREATEVIEW = false;
         switch (v.getId()) {
             case R.id.image_iv_next_video:
                 Log.e(TAG, "NEXT BTN");
                 if (getPosition() < getListSize() - 1) {
+
                     releasePlayer();
                     int pos = getPosition();
                     setPosition(++pos);
@@ -295,21 +330,20 @@ public class DescriptionFragment extends Fragment implements View.OnClickListene
                 MediaSource mediaSource = new ExtractorMediaSource(videoURI, dataSourceFactory, extractorsFactory, null, null);
 
                 exoPlayerView.setPlayer(exoPlayer);
-
-                Log.e(TAG, "position "+ bundle.getLong( SELECTED_POSITION, -1 ) );
-                if ((bundle != null) && ( bundle.getLong( SELECTED_POSITION, -1 ) != -1 )) {
+                Log.e(TAG, "in showPlayer savedInstanceState isn't null " + ((savedInstanceState != null) ? "true " : "false ") + "onCreateView boolean" + ((ONCREATEVIEW) ? "true " : "false "));
+                if (savedInstanceState != null && ONCREATEVIEW) {
+                    ONCREATEVIEW = false;
                     Log.e(TAG, "in show player bundle is not null");
-                    exoPlayer.seekTo(bundle.getLong(SELECTED_POSITION));
+                    exoPlayer.seekTo(savedInstanceState.getLong(SELECTED_POSITION));
                     exoPlayer.prepare(mediaSource);
-                    exoPlayer.setPlayWhenReady(bundle.getBoolean(STATE));
-                }else{
+                    exoPlayer.setPlayWhenReady(savedInstanceState.getBoolean(STATE));
+                } else {
                     Log.e(TAG, "in show player bundle is" +
                             " null");
 
                     exoPlayer.prepare(mediaSource);
                     exoPlayer.setPlayWhenReady(true);
                 }
-
 
 
             } else {
